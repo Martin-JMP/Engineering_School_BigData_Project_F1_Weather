@@ -22,7 +22,7 @@ visualization_data = {
         "uiStateJSON": "{}",
         "description": "",
         "version": 1,
-        "kibanaSavedObjectMeta": {"searchSourceJSON": json.dumps({"index": "test_f1", "query": {"language": "kuery", "query": ""}, "filter": []})}
+        "kibanaSavedObjectMeta": {"searchSourceJSON": json.dumps({"index": "test_f1_V6", "query": {"language": "kuery", "query": ""}, "filter": []})}
     }
 }
 
@@ -39,5 +39,5 @@ visualization_response = response.json()
 print(visualization_response)
 
 # Sauvegarder l'ID de la visualisation dans un fichier
-with open("visualization_id.txt", "w") as f:
+with open("visualization_id_V6.txt", "w") as f:
     f.write(visualization_response['id'])
