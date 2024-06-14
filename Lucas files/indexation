@@ -1,0 +1,51 @@
+import os
+import pandas as pd
+import json
+import subprocess
+from airflow import DAG
+from airflow.operators.python import PythonOperator
+from datetime import datetime, timedelta
+
+default_args = {
+    'owner': 'airflow',
+    'depends_on_past': False,
+    'email_on_failure': False,
+    'email_on_retry': False,
+    'retries': 1,
+    'retry_delay': timedelta(minutes=1),
+    'start_date': datetime(2023, 1, 1)
+}
+
+def index_data_from_parquet(parquet_filepath):
+    YOUR_USERNAME = os.getenv('YOUR_USERNAME', 'elastic')
+    YOUR_PASSWORD = os.getenv('YOUR_PASSWORD', 'HcbGveD69-FvojuAdxJ-')
+    YOUR_ELASTIC_URL = os.getenv('YOUR_ELASTIC_URL', 'http://localhost:9200')
+
+    # Lire le fichier Parquet
+    df = pd.read_parquet(parquet_filepath)
+
+    # Créer un index
+    create_index_command = f'curl -X PUT "{YOUR_ELASTIC_URL}/f1data?pretty" -u {YOUR_USERNAME}:{YOUR_PASSWORD}'
+    subprocess.run(create_index_command, shell=True, check=True)
+
+    # Indexer les documents
+    for i, row in df.iterrows():
+        doc = row.to_dict()
+        doc_command = f'''curl -X POST "{YOUR_ELASTIC_URL}/f1data/_doc/?pretty" -H 'Content-Type: application/json' -d'{json.dumps(doc)}' -u {YOUR_USERNAME}:{YOUR_PASSWORD}'''
+        subprocess.run(doc_command, shell=True, check=True)
+
+    print(f"{len(df)} documents indexed from {parquet_filepath}")
+
+with DAG('index_data_dag',
+         default_args=default_args,
+         description='Index data from Parquet file to Elasticsearch',
+         schedule_interval=None,
+         catchup=False) as dag:
+
+    index_data_task = PythonOperator(
+        task_id='index_data_from_parquet',
+        python_callable=index_data_from_parquet,
+        op_kwargs={
+            'parquet_filepath': '/path/to/your/parquet/file.parquet'
+        },
+    )
