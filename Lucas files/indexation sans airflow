@@ -1,30 +1,33 @@
 import os
 import pandas as pd
 import json
-import subprocess
+from elasticsearch import Elasticsearch, helpers
 
 def index_data_from_parquet(parquet_filepath):
-    YOUR_USERNAME = os.getenv('YOUR_USERNAME', 'elastic')
-    YOUR_PASSWORD = os.getenv('YOUR_PASSWORD', 'HcbGveD69-FvojuAdxJ-')
-    YOUR_ELASTIC_URL = os.getenv('YOUR_ELASTIC_URL', 'http://localhost:9200')
+    es = Elasticsearch(
+        ['http://localhost:9200'],
+        http_auth=(os.getenv('YOUR_USERNAME', 'elastic'), os.getenv('YOUR_PASSWORD', 'HcbGveD69-FvojuAdxJ-'))
+    )
 
-    # Lire le fichier Parquet
+    if not es.ping():
+        raise ValueError("Connection failed")
+
     df = pd.read_parquet(parquet_filepath)
+    records = df.to_dict(orient='records')
 
-    # Créer un index
-    create_index_command = f'curl -X PUT "{YOUR_ELASTIC_URL}/f1data?pretty" -u {YOUR_USERNAME}:{YOUR_PASSWORD}'
-    subprocess.run(create_index_command, shell=True, check=True)
+    actions = [
+        {
+            "_index": "f1data",
+            "_source": record,
+        }
+        for record in records
+    ]
 
-    # Indexer les documents
-    for i, row in df.iterrows():
-        doc = row.to_dict()
-        doc_command = f'''curl -X POST "{YOUR_ELASTIC_URL}/f1data/_doc/?pretty" -H 'Content-Type: application/json' -d'{json.dumps(doc)}' -u {YOUR_USERNAME}:{YOUR_PASSWORD}'''
-        subprocess.run(doc_command, shell=True, check=True)
-
-    print(f"{len(df)} documents indexed from {parquet_filepath}")
+    helpers.bulk(es, actions)
+    print(f"{len(records)} documents indexed from {parquet_filepath}")
 
 # Chemin vers le fichier Parquet
-parquet_filepath = '/path/to/your/parquet/file.parquet'
+parquet_filepath = 'D:/path/to/your/parquet/file.parquet'
 
 # Appel de la fonction pour indexer les données
 index_data_from_parquet(parquet_filepath)
