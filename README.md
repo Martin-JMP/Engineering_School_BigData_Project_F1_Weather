@@ -1,82 +1,81 @@
 ## Engineering School ISEP Project 
 
 # Advanced Databases and Big-Data
+This project, submitted on June 15, 2024, by Martin JONCOURT and Lucas SAYAG, focuses on integrating and analyzing Formula 1 Grand Prix race data with corresponding weather data. The project utilizes multiple APIs to gather data, processes it using Apache Spark, and visualizes it on a Kibana dashboard.
 
-Ce projet, soumis le 15 juin 2024 par Martin JONCOURT et Lucas SAYAG, se concentre sur l'intégration et l'analyse des données des courses de Formule 1 avec les données météorologiques correspondantes. Le projet utilise plusieurs API pour collecter les données, les traite avec Apache Spark, et les visualise sur un tableau de bord Kibana.
-
-## Membres du Projet
+## Project Members
 - Martin JONCOURT
 - Lucas SAYAG
 
-## Informations sur les APIs
-### API Résultats des Courses de Formule 1
-- **Fournisseur :** Ergast API
-- **Données :** Résultats des courses, classements des pilotes, détails des circuits, classements des constructeurs.
-- **Fréquence de Mise à Jour :** Après chaque Grand Prix de F1
-- **Format des Données :** JSON
-- **Exemple de Requête :** `http://ergast.com/api/f1/2024/1/results`
+## API Information
+### Formula 1 Grand Prix Race Result API
+- **Provider:** Ergast API
+- **Data:** Race results, driver standings, circuit details, constructor standings.
+- **Update Frequency:** After every F1 Grand Prix
+- **Data Format:** JSON
+- **Example Request:** `http://ergast.com/api/f1/2024/1/results`
 
-### API Données Météorologiques
-- **Fournisseur :** Meteostat
-- **Données :** Températures moyennes, minimales, maximales, vitesse du vent, précipitations, neige.
-- **Fréquence de Mise à Jour :** Toutes les minutes
-- **Format des Données :** CSV
-- **Exemple de Requête :** `https://meteostat.p.rapidapi.com/point/daily?lat=-37.8497&lon=144.968&start=2024-03-16&end=2024-03-24`
+### Weather Data API
+- **Provider:** Meteostat
+- **Data:** Average, minimum, maximum temperatures, wind speed, precipitation, snow.
+- **Update Frequency:** Every minute
+- **Data Format:** CSV
+- **Example Request:** `https://meteostat.p.rapidapi.com/point/daily?lat=-37.8497&lon=144.968&start=2024-03-16&end=2024-03-24`
 
-## Traitement des Données
-### API Résultats des Courses de Formule 1
-- **Formatage du Temps :** Affichage des temps de course en minutes, secondes, millisecondes.
-- **Nouvelles Variables :**
-  - Points gagnés
-  - Points cumulatifs
-- **Format des Données :** Parquet
+## Data Processing
+### Formula 1 Grand Prix Race Result API
+- **Time Formatting:** Display race times in minutes, seconds, milliseconds.
+- **New Variables:**
+  - Points earned
+  - Cumulative points
+- **Data Format:** Parquet
 
-### API Données Météorologiques
-- **Nouvelles Variables :**
-  - Ville
-  - Pays
-- **Format des Données :** Parquet
+### Weather Data API
+- **New Variables:**
+  - City
+  - Country
+- **Data Format:** Parquet
 
-### Combinaison des Données
-- **Méthode de Combinaison :** Jointure interne sur ville, pays et date en utilisant les DataFrames Spark.
-- **Objectif :** Enrichir les données de la Formule 1 avec des informations météorologiques contextuelles.
-- **Format de Sortie :** Parquet
+### Data Combination
+- **Combination Method:** Inner join on city, country, and date using Spark DataFrames.
+- **Purpose:** Enrich Formula 1 data with contextual meteorological information.
+- **Output Format:** Parquet
 
-## Analyse et Utilisation
-### Tâches d'Analyse
-- Victoires par pilote, par année, par ville
-- Tours les plus rapides par course
-- Analyse des données météorologiques par année, ville, pilote
-- Évolution des points des pilotes
-- Analyse des arrêts au stand
-- **Format de Sortie :** Fichiers Parquet pour chaque analyse
+## Analysis and Usage
+### Analysis Tasks
+- Wins per driver, per year, per city
+- Fastest laps per race
+- Weather data analysis by year, city, driver
+- Evolution of driver points
+- Pit stop analysis
+- **Output Format:** Parquet files for each analysis
 
-### Utilisation
-- Les données sont visualisées sur un tableau de bord Kibana.
+### Usage
+- Data is visualized on a Kibana dashboard.
 
-## Structure du DAG
-- Le DAG Airflow `project_dag` orchestre les tâches de récupération, de traitement et d'analyse des données.
+## DAG Structure
+- The Airflow DAG `project_dag` orchestrates the data fetching, processing, and analysis tasks.
 
-## Tâches
-1. Récupérer les Données Brutes
-2. Traiter les Données
-3. Récupérer les Données Météorologiques
-4. Agréger les Données
-5. Combiner les Données
-6. Analyser les Données d'Utilisation
-7. Tâches d'Indexation
+## Tasks
+1. Fetch Raw Data
+2. Process Data
+3. Fetch Weather Data
+4. Aggregate Data
+5. Combine Data
+6. Usage Data Analysis
+7. Indexing Tasks
 
-## Graphique du DAG
-- Illustration de l'organisation du DAG et de la séquence des tâches.
+## DAG Graph
+- Illustrates the organization of the DAG and the sequence of tasks.
 
-## Structure du Data Lake
-- Une collection organisée de fichiers de données, structurée pour des requêtes et analyses efficaces.
+## Data Lake Structure
+- An organized collection of data files, structured for efficient querying and analysis.
 
-## Indexes et Vues de Données
-- Création de vues de données individuelles dans Kibana pour chaque index afin d'améliorer l'organisation et la facilité d'utilisation, permettant une exploration efficace et une analyse ciblée.
+## Indexes and Data Views
+- Created individual data views in Kibana for each index to enhance data organization and usability, allowing efficient exploration and targeted analysis.
 
-## Tableau de Bord
-- Fournit une analyse complète des performances des pilotes de F1 et des conditions météorologiques associées lors des différents Grands Prix.
+## Dashboard
+- Provides comprehensive analysis of F1 drivers' performances and associated weather conditions at various Grand Prix events.
 
 ## Conclusion
-Le projet intègre et analyse avec succès les données des courses de F1 avec les données météorologiques, offrant des insights précieux sur les performances en course et l'impact des conditions météorologiques. Les résultats sont visualisés sur un tableau de bord Kibana, facilitant la prise de décisions informées et la planification stratégique pour les équipes de F1 et les passionnés.
+The project successfully integrates and analyzes F1 race data with weather data, providing valuable insights into race performance and the impact of weather conditions. The results are visualized on a Kibana dashboard, facilitating informed decision-making and strategy planning for F1 teams and enthusiasts.
