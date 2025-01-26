@@ -1,6 +1,6 @@
 ## Engineering School ISEP Project 
 
-Graded : 16/20
+Mark : 16/20
 
 # Advanced Databases and Big-Data
 This project, submitted on June 15, 2024, by Martin JONCOURT and Lucas SAYAG, focuses on integrating and analyzing Formula 1 Grand Prix race data with corresponding weather data. The project utilizes multiple APIs to gather data, processes it using Apache Spark, and visualizes it on a Kibana dashboard.
